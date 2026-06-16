@@ -3,3 +3,10 @@ venv/
 __pycache__/
 .DS_Store
 .env
+remotion-composer/node_modules/
+remotion-composer/out/
+bin/
+*.wav
+*.mp3
+rendered_video.mp4
+pipeline_checkpoint.json

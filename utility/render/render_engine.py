@@ -30,8 +30,21 @@ def get_program_path(program_name):
     program_path = search_program(program_name)
     return program_path
 
-def get_output_media(audio_file_path, timed_captions, background_video_data, video_server):
+def get_output_media(audio_file_path, timed_captions, background_video_data, video_server, background_music_path=None):
     config = get_config()
+    
+    # Check if rendering with Remotion is configured
+    render_engine = os.getenv('RENDER_ENGINE', 'moviepy').lower()
+    if render_engine == 'remotion':
+        print("[RenderEngine] Routing compilation to React/Remotion renderer...")
+        from utility.render.remotion_renderer import render_with_remotion
+        return render_with_remotion(
+            audio_file_path=audio_file_path,
+            timed_captions=timed_captions,
+            background_video_data=background_video_data,
+            background_music_path=background_music_path
+        )
+
     OUTPUT_FILE_NAME = "rendered_video.mp4"
     magick_path = get_program_path("magick")
     print(magick_path)
@@ -55,6 +68,22 @@ def get_output_media(audio_file_path, timed_captions, background_video_data, vid
     audio_clips = []
     audio_file_clip = AudioFileClip(audio_file_path)
     audio_clips.append(audio_file_clip)
+
+    if background_music_path and os.path.exists(background_music_path):
+        try:
+            bg_music_clip = AudioFileClip(background_music_path)
+            # Set volume of background music to 12% so voiceover remains clear
+            bg_music_clip = bg_music_clip.volumex(0.12)
+            # Loop bg music if it's shorter than voiceover
+            if bg_music_clip.duration < audio_file_clip.duration:
+                bg_music_clip = audio_loop(bg_music_clip, duration=audio_file_clip.duration)
+            else:
+                bg_music_clip = bg_music_clip.set_duration(audio_file_clip.duration)
+            audio_clips.append(bg_music_clip)
+            print("[RenderEngine] Successfully loaded and mixed background music.")
+        except Exception as e:
+            print(f"[RenderEngine] Error loading/mixing background music: {e}")
+
     
     # Only add captions if enabled in config
     if config.get_captions_enabled():

@@ -66,9 +66,32 @@ def getVideoSearchQueriesTimed(script,captions_timed):
         
         return out
     except Exception as e:
-        print("error in response",e)
-   
-    return None
+        print("error in response, generating local fallback queries:", e)
+        # Stop words to filter out for cleaner search terms
+        stop_words = {"the", "a", "an", "and", "or", "but", "is", "are", "was", "were", "of", "to", "in", "on", "at", "for", "with", "as", "by", "it", "its", "we", "us", "our", "you"}
+        
+        fallback = []
+        t = 0.0
+        while t < end:
+            t_next = min(t + 4.0, end)
+            
+            # Extract words spoken during this segment
+            segment_words = []
+            for (w_t1, w_t2), word in captions_timed:
+                # Check if word overlaps with segment
+                if w_t1 >= t and w_t1 < t_next:
+                    clean = re.sub(r'[^\w\s]', '', str(word).lower()).strip()
+                    if clean and clean not in stop_words:
+                        segment_words.append(clean)
+            
+            # Join up to 4 words to make a visual query
+            query_text = " ".join(segment_words[:4])
+            if not query_text:
+                query_text = "underwater deep ocean" if "ocean" in script.lower() else "stock background video"
+            
+            fallback.append([[t, t_next], [query_text, "underwater ocean depth", "marine life abyss"]])
+            t = t_next
+        return fallback
 
 def call_OpenAI(script,captions_timed):
     config = get_config()

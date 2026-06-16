@@ -76,8 +76,8 @@ class Config:
             if not os.getenv('GEMINI_MODEL'):
                 errors.append("Missing required configuration: GEMINI_MODEL (required for LLM_PROVIDER=gemini)")
         
-        if not os.getenv('PEXELS_API_KEY'):
-            errors.append("Missing required API key: PEXELS_API_KEY (always required)")
+        if not os.getenv('PEXELS_API_KEY') and not os.getenv('MUAPI_API_KEY'):
+            errors.append("Missing required API key: PEXELS_API_KEY or MUAPI_API_KEY must be provided")
         
         stt_provider = os.getenv('STT_PROVIDER', '').lower()
         if stt_provider not in ['whisper', 'deepgram']:
