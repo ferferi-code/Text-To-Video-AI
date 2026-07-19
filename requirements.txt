@@ -57,3 +57,5 @@ whisper_timestamped
 edge-tts
 pytrends
 beautifulsoup4
+suno-bark
+vaderSentiment
