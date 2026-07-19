@@ -73,8 +73,8 @@ class Config:
             errors.append("Missing required API key: DEEPGRAM_API_KEY")
 
         tts_provider = os.getenv('TTS_PROVIDER', 'edgetts').lower()
-        if tts_provider not in ['edgetts', 'elevenlabs']:
-            errors.append(f"Invalid TTS_PROVIDER: '{tts_provider}'. Must be one of: edgetts, elevenlabs")
+        if tts_provider not in ['edgetts', 'elevenlabs', 'local']:
+            errors.append(f"Invalid TTS_PROVIDER: '{tts_provider}'. Must be one of: edgetts, elevenlabs, local")
         elif tts_provider == 'edgetts' and not os.getenv('EDGETTS_VOICE'):
             errors.append("Missing required configuration: EDGETTS_VOICE")
         elif tts_provider == 'elevenlabs':
@@ -151,6 +151,8 @@ class Config:
             return os.getenv('EDGETTS_VOICE', 'en-US-GuyNeural')
         elif provider == 'elevenlabs':
             return os.getenv('ELEVENLABS_VOICE_ID', '21m00Tcm4TlvDq8ikWAM')
+        elif provider == 'local':
+            return os.getenv('LOCAL_TTS_VOICE', 'v2/en_speaker_6')
         raise ConfigurationError(f"Unknown TTS provider: {provider}")
 
     def get_pexels_api_key(self) -> str:
