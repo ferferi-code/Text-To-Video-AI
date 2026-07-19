@@ -17,12 +17,12 @@ def main():
         if not topic:
             topic = "5 amazing facts about space exploration"
     elif choice == '2':
-        print("\n🔍 Fetching global trends and generating viral title via Local LLM...")
+        print("\n🔍 Fetching global trends...")
         from utility.trend.viral_title_generator import get_raw_trend, generate_viral_title_with_local_llm
         
         raw_topic = get_raw_trend()
         print(f"📌 Raw Trend Selected: '{raw_topic}'")
-        print("🧠 Local AI is crafting the perfect viral title (this takes ~2-5 seconds)...")
+        print("🧠 Local AI is crafting the perfect viral title (downloading model on first run)...")
         
         topic = generate_viral_title_with_local_llm(raw_topic)
         print(f"🚀 AI-Generated Viral Title: '{topic}'\n")
