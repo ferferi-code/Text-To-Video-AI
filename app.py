@@ -1,4 +1,5 @@
 import os
+import re
 import asyncio
 import argparse
 import requests
@@ -175,6 +176,17 @@ if __name__ == "__main__":
                 video_server="pexel",
                 background_music_path=None # Music is already mixed in voiceover_path
             )
+            
+            # Auto-rename video file based on topic
+            safe_filename = re.sub(r'[^a-zA-Z0-9\s]', '', topic).lower().strip()
+            safe_filename = re.sub(r'\s+', '-', safe_filename)
+            new_filename = f"{safe_filename}.mp4"
+            
+            if os.path.exists(video_output) and video_output != new_filename:
+                os.rename(video_output, new_filename)
+                video_output = new_filename
+                print(f"Video renamed to: {new_filename}")
+                
             print(f"\nSUCCESS! Final video saved as '{video_output}'")
             manager.update_data("video_path", video_output)
             manager.set_stage("completed")
