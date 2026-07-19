@@ -59,3 +59,4 @@ pytrends
 beautifulsoup4
 suno-bark
 vaderSentiment
+ollama
