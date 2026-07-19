@@ -215,6 +215,22 @@ class Config:
             return 'hormozi'
         return style
 
+    def get_watermark_enabled(self) -> bool:
+        return os.getenv('WATERMARK_ENABLED', 'true').lower() == 'true'
+
+    def get_watermark_text(self) -> str:
+        return os.getenv('WATERMARK_TEXT', '@YourChannelID')
+
+    def get_watermark_color(self) -> str:
+        return os.getenv('WATERMARK_COLOR', 'white').lower()
+
+    def get_watermark_opacity(self) -> float:
+        try:
+            opacity = float(os.getenv('WATERMARK_OPACITY', '0.3'))
+            return max(0.1, min(0.9, opacity))
+        except ValueError:
+            return 0.3
+
 def get_config() -> Config:
     try:
         return Config()
