@@ -47,7 +47,7 @@ class Config:
     def _validate_configuration(self) -> None:
         errors = []
         llm_provider = os.getenv('LLM_PROVIDER', 'auto').lower()
-        valid_providers = ['auto', 'openrouter', 'openai', 'groq', 'gemini']
+        valid_providers = ['auto', 'openrouter', 'openai', 'groq', 'gemini', 'local']
         
         if llm_provider not in valid_providers:
             errors.append(
@@ -106,6 +106,8 @@ class Config:
             return [os.getenv('GROQ_MODEL', 'llama-3.3-70b-versatile'), 'llama-3.1-70b-versatile', 'mixtral-8x7b-32768']
         elif provider == 'gemini':
             return [os.getenv('GEMINI_MODEL', 'gemini-1.5-flash'), 'gemini-1.5-pro', 'gemini-1.5-flash-8b']
+        elif provider == 'local':
+            return ['Qwen/Qwen2.5-1.5B-Instruct']
         raise ConfigurationError(f"Unknown LLM provider: {provider}")
 
     def get_llm_client(self, provider: str = None):
@@ -131,6 +133,8 @@ class Config:
                 raise ConfigurationError("Gemini library not installed.")
             genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
             return genai
+        elif provider == 'local':
+            return "local_client"
         raise ConfigurationError(f"Unknown LLM provider: {provider}")
 
     def get_llm_model(self, provider: str = None) -> str:
